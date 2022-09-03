@@ -46,11 +46,6 @@ CREATE TABLE `Objetivos` (
  CONSTRAINT `Objetivos_ibfk_1` FOREIGN KEY (`id_tipo`) REFERENCES `TiposDeObjetivos` (`id`),
  CONSTRAINT `Objetivos_ibfk_3` FOREIGN KEY (`id_estado`) REFERENCES `Estados` (`id`)
 );
-CREATE TABLE `NivelesDeExigencia` (
- `id` int(11) NOT NULL,
- `Exigencia` varchar(10) COLLATE utf8_unicode_ci NOT NULL,
- PRIMARY KEY (`id`)
-);
 CREATE TABLE `Preguntas` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `Pregunta` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
