@@ -189,6 +189,7 @@ id_entrenamiento int not null,
 FOREIGN key (id_entrenamiento) REFERENCES Entrenamientos(id), 
 Peso float not null, 
 MasaCorporal float not null );
+ALTER TABLE Ejercicios ADD COLUMN VideoURL varchar (255);
 INSERT INTO Sexo (Sexo) VALUES ('Masculino');
 INSERT INTO Sexo (Sexo) VALUES ('Femenino');
 INSERT INTO DiasHabilitados (Dia) VALUES ('Lunes');
