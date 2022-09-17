@@ -182,6 +182,13 @@ CREATE TABLE `Subrutinas` (
  CONSTRAINT `Subrutinas_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `Ejercicios` (`id`),
  CONSTRAINT `Subrutinas_ibfk_3` FOREIGN KEY (`id_estado`) REFERENCES `EstadosSubrutina` (`id`)
 );
+CREATE TABLE `PesajeDeUsuarios` ( 
+id_usuario int not null, 
+FOREIGN key (id_usuario) REFERENCES Usuarios(id), 
+id_entrenamiento int not null, 
+FOREIGN key (id_entrenamiento) REFERENCES Entrenamientos(id), 
+Peso float not null, 
+MasaCorporal float not null );
 INSERT INTO Sexo (Sexo) VALUES ('Masculino');
 INSERT INTO Sexo (Sexo) VALUES ('Femenino');
 INSERT INTO DiasHabilitados (Dia) VALUES ('Lunes');
