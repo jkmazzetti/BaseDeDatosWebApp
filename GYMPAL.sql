@@ -5,7 +5,7 @@ CREATE TABLE `EstadosObjetivos` (
  `Estado` varchar(12) COLLATE utf8_bin DEFAULT NULL,
  PRIMARY KEY (`id`)
 );
-CREATE TABLE `EstadosSubrutina` (
+CREATE TABLE `EstadoEjecicio` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
  `Estado` varchar(12) COLLATE utf8_bin DEFAULT NULL,
  PRIMARY KEY (`id`)
@@ -127,7 +127,7 @@ CREATE TABLE `Ejercicios` (
  CONSTRAINT `Ejercicios_ibfk_1` FOREIGN KEY (`id_exigencia`) REFERENCES `NivelesDeExigencia` (`id`),
  CONSTRAINT `Ejercicios_ibfk_2` FOREIGN KEY (`id_grupo_muscular`) REFERENCES `GruposMusculares` (`id`)
 );
-CREATE TABLE `Entrenamientos` (
+CREATE TABLE `Rutinas` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `fechaDeInicio` date NOT NULL,
  `FechaDeFin` date NOT NULL,
@@ -139,56 +139,70 @@ CREATE TABLE `Entrenamientos` (
  PRIMARY KEY (`id`),
  KEY `id_usuario` (`id_usuario`),
  KEY `id_objetivo` (`id_objetivo`), 
- CONSTRAINT `Entrenamientos_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
- CONSTRAINT `Entrenamientos_ibfk_2` FOREIGN KEY (`id_objetivo`) REFERENCES `Objetivos` (`id`) 
+ CONSTRAINT `Rutinas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
+ CONSTRAINT `Rutinas_ibfk_2` FOREIGN KEY (`id_objetivo`) REFERENCES `Objetivos` (`id`) 
 );
 CREATE TABLE `LogrosDeUsuarios` (
  `id_usuario` int(11) NOT NULL,
  `id_logro` int(11) NOT NULL,
- `id_entrenamiento` int(11) NOT NULL,
+ `id_rutina` int(11) NOT NULL,
  KEY `id_usuario` (`id_usuario`),
  KEY `id_logro` (`id_logro`),
- KEY `id_entrenamiento` (`id_entrenamiento`),
+ KEY `id_rutina` (`id_rutina`),
  CONSTRAINT `LogrosDeUsuarios_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `Usuarios` (`id`),
  CONSTRAINT `LogrosDeUsuarios_ibfk_2` FOREIGN KEY (`id_logro`) REFERENCES `Logros` (`id`),
- CONSTRAINT `LogrosDeUsuarios_ibfk_3` FOREIGN KEY (`id_entrenamiento`) REFERENCES `Entrenamientos` (`id`)
+ CONSTRAINT `LogrosDeUsuarios_ibfk_3` FOREIGN KEY (`id_rutina`) REFERENCES `Rutinas` (`id`)
 );
-CREATE TABLE `Rutinas` (
+CREATE TABLE `Entrenamientos` (
  `id` int(11) NOT NULL AUTO_INCREMENT,
  `FechaProgramada` date NOT NULL,
  `id_dia` int(11) NOT NULL,
  `TiempoRestante` float DEFAULT 0.0,
  `Completitud` float DEFAULT 0.0,
- `id_entrenamiento` int(11) NOT NULL,
+ `id_rutina` int(11) NOT NULL,
  PRIMARY KEY (`id`),
  KEY `id_dia` (`id_dia`),
- KEY `id_entrenamiento` (`id_entrenamiento`),
- CONSTRAINT `Rutinas_ibfk_1` FOREIGN KEY (`id_dia`) REFERENCES `DiasHabilitados` (`id`),
- CONSTRAINT `Rutinas_ibfk_2` FOREIGN KEY (`id_entrenamiento`) REFERENCES `Entrenamientos` (`id`)
+ KEY `id_rutina` (`id_rutina`),
+ CONSTRAINT `Entrenamientos_ibfk_1` FOREIGN KEY (`id_dia`) REFERENCES `DiasHabilitados` (`id`),
+ CONSTRAINT `Entrenamientos_ibfk_2` FOREIGN KEY (`id_rutina`) REFERENCES `Rutinas` (`id`)
 );
-CREATE TABLE `Subrutinas` (
- `id_rutina` int(11) NOT NULL,
+CREATE TABLE `EjerciciosDeEntrenamiento` (
+ `id` int(11) NOT NULL AUTO_INCREMENT,
+ `id_entrenamiento` int(11) NOT NULL,
  `id_ejercicio` int(11) NOT NULL,
- `Serie` int(11) DEFAULT 0,
+ `Series` int(11) DEFAULT 0,
  `Repeticiones` int(11) DEFAULT 0,
  `Esfuerzo` int(11) DEFAULT 0.0,
  `Completado` tinyint(1) DEFAULT 0,
  `TiempoRequerido` float DEFAULT 0.0,
- `id_estado` int(11) DEFAULT 1,
- KEY `id_rutina` (`id_rutina`),
+ `id_estado` int(11) DEFAULT 1, 
+ PRIMARY KEY (`id`),
+ KEY `id_entrenamiento` (`id_entrenamiento`),
  KEY `id_ejercicio` (`id_ejercicio`),
  KEY `id_estado` (`id_estado`),
- CONSTRAINT `Subrutinas_ibfk_1` FOREIGN KEY (`id_rutina`) REFERENCES `Rutinas` (`id`),
- CONSTRAINT `Subrutinas_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `Ejercicios` (`id`),
- CONSTRAINT `Subrutinas_ibfk_3` FOREIGN KEY (`id_estado`) REFERENCES `EstadosSubrutina` (`id`)
+ CONSTRAINT `EjerciciosDeEntrenamiento_ibfk_1` FOREIGN KEY (`id_entrenamiento`) REFERENCES `Entrenamientos` (`id`),
+ CONSTRAINT `EjerciciosDeEntrenamiento_ibfk_2` FOREIGN KEY (`id_ejercicio`) REFERENCES `Ejercicios` (`id`),
+ CONSTRAINT `EjerciciosDeEntrenamiento_ibfk_3` FOREIGN KEY (`id_estado`) REFERENCES `EstadoEjecicio` (`id`)
 );
 CREATE TABLE `PesajeDeUsuarios` ( 
 id_usuario int not null, 
 FOREIGN key (id_usuario) REFERENCES Usuarios(id), 
-id_entrenamiento int not null, 
-FOREIGN key (id_entrenamiento) REFERENCES Entrenamientos(id), 
+id_rutina int not null, 
+FOREIGN key (id_rutina) REFERENCES Rutinas(id), 
 Peso float not null, 
-MasaCorporal float not null );
+MasaCorporal float not null
+);
+CREATE TABLE `EjerciciosRealizadosPorEntrenamiento`(
+`id_entrenamiento` int not null,
+`id_ejercicio_entrenamiento` int not null,
+`Series` int not null,
+`Repeticiones` int not null,
+`Esfuerzo` float not null,
+KEY `id_entrenamiento` (`id_entrenamiento`),
+KEY `id_ejercicio_entrenamiento` (`id_ejercicio_entrenamiento`),
+CONSTRAINT `EjerciciosRealizadosPorEntrenamiento_ibfk_1` FOREIGN KEY (`id_entrenamiento`) REFERENCES `Entrenamientos` (`id`),
+CONSTRAINT `EjerciciosRealizadosPorEntrenamiento_ibfk_2` FOREIGN KEY (`id_ejercicio_entrenamiento`) REFERENCES `EjerciciosDeEntrenamiento` (`id`)
+);
 ALTER TABLE Ejercicios ADD COLUMN VideoURL varchar (255);
 INSERT INTO Sexo (Sexo) VALUES ('Masculino');
 INSERT INTO Sexo (Sexo) VALUES ('Femenino');
@@ -225,10 +239,10 @@ INSERT INTO Logros (Logro, Descripcion, URL) VALUES ('Medalla Constancia','¡Asi
 INSERT INTO Logros (Logro, Descripcion, URL) VALUES ('Medalla Creído','¡Te ves muy bien!','img/medalla_creido.png');
 INSERT INTO EstadosObjetivos (Estado) VALUES ('No cumplido');
 INSERT INTO EstadosObjetivos (Estado) VALUES ('Cumplido');
-INSERT INTO EstadosSubrutina (Estado) VALUES ('Pausado');
-INSERT INTO EstadosSubrutina (Estado) VALUES ('En proceso');
-INSERT INTO EstadosSubrutina (Estado) VALUES ('Finalizado');
-INSERT INTO EstadosSubrutina (Estado) VALUES ('Cancelado');
+INSERT INTO EstadoEjecicio (Estado) VALUES ('Pausado');
+INSERT INTO EstadoEjecicio (Estado) VALUES ('En proceso');
+INSERT INTO EstadoEjecicio (Estado) VALUES ('Finalizado');
+INSERT INTO EstadoEjecicio (Estado) VALUES ('Cancelado');
 INSERT INTO Ejercicios (Nombre, id_exigencia, NivelAerobico, TiempoUnitario, id_grupo_muscular) VALUES ('Press inclinado', 3, 8, 18, 1);
 INSERT INTO Ejercicios (Nombre, id_exigencia, NivelAerobico, TiempoUnitario, id_grupo_muscular) VALUES ('Press declinado', 3, 8, 12, 1);
 INSERT INTO Ejercicios (Nombre, id_exigencia, NivelAerobico, TiempoUnitario, id_grupo_muscular) VALUES ('Flexiones', 2, 5, 10, 1);
@@ -241,12 +255,12 @@ INSERT INTO RespuestasDeUsuarios (id_usuario, id_pregunta, Respuesta) VALUES ('1
 INSERT INTO RespuestasDeUsuarios (id_usuario, id_pregunta, Respuesta) VALUES ('1', '2', 'Martin');
 INSERT INTO RespuestasDeUsuarios (id_usuario, id_pregunta, Respuesta) VALUES ('1', '5', 'Fulanito');
 INSERT INTO Objetivos (id_tipo, PesoIdeal, MasaCorporalIdeal, MargenAceptable, id_estado) VALUES ('2', '72.5', '80.5', '3.5', '1');
-INSERT INTO Entrenamientos (fechaDeInicio, FechaDeFin, id_usuario, id_objetivo) VALUES ('2022-09-13', '2022-10-04', '1','1');
-INSERT INTO Rutinas (FechaProgramada, id_dia, id_entrenamiento) VALUES ('2022-09-13', '2', '1');
-INSERT INTO Rutinas (FechaProgramada, id_dia, id_entrenamiento) VALUES ('2022-09-15', '4', '1');
-INSERT INTO Subrutinas (id_rutina, id_ejercicio, Serie, Repeticiones, Esfuerzo, id_estado) VALUES ('1', '1', '20', '3', '10.5', '1');
-INSERT INTO Subrutinas (id_rutina, id_ejercicio, Serie, Repeticiones, Esfuerzo, id_estado) VALUES ('1', '2', '15', '2', '9.5', '1');
-INSERT INTO Subrutinas (id_rutina, id_ejercicio, Serie, Repeticiones, Esfuerzo, id_estado) VALUES ('1', '3', '10', '4', '12.5', '1');
-INSERT INTO Subrutinas (id_rutina, id_ejercicio, Serie, Repeticiones, Esfuerzo, id_estado) VALUES ('2', '4', '15', '2', '8.5', '1');
-INSERT INTO Subrutinas (id_rutina, id_ejercicio, Serie, Repeticiones, Esfuerzo, id_estado) VALUES ('2', '2', '10', '2', '10.0', '1');
-INSERT INTO Subrutinas (id_rutina, id_ejercicio, Serie, Repeticiones, Esfuerzo, id_estado) VALUES ('2', '5', '20', '3', '12.5', '1');	
+INSERT INTO Rutinas (fechaDeInicio, FechaDeFin, id_usuario, id_objetivo) VALUES ('2022-09-13', '2022-10-04', '1','1');
+INSERT INTO Entrenamientos (FechaProgramada, id_dia, id_rutina) VALUES ('2022-09-13', '2', '1');
+INSERT INTO Entrenamientos (FechaProgramada, id_dia, id_rutina) VALUES ('2022-09-15', '4', '1');
+INSERT INTO EjerciciosDeEntrenamiento (id_entrenamiento, id_ejercicio, Series, Repeticiones, Esfuerzo, id_estado) VALUES ('1', '1', '3', '20', '10.5', '1');
+INSERT INTO EjerciciosDeEntrenamiento (id_entrenamiento, id_ejercicio, Series, Repeticiones, Esfuerzo, id_estado) VALUES ('1', '2', '2', '15', '9.5', '1');
+INSERT INTO EjerciciosDeEntrenamiento (id_entrenamiento, id_ejercicio, Series, Repeticiones, Esfuerzo, id_estado) VALUES ('1', '3', '4', '10', '12.5', '1');
+INSERT INTO EjerciciosDeEntrenamiento (id_entrenamiento, id_ejercicio, Series, Repeticiones, Esfuerzo, id_estado) VALUES ('2', '4', '1', '50', '8.5', '1');
+INSERT INTO EjerciciosDeEntrenamiento (id_entrenamiento, id_ejercicio, Series, Repeticiones, Esfuerzo, id_estado) VALUES ('2', '2', '3', '20', '10.0', '1');
+INSERT INTO EjerciciosDeEntrenamiento (id_entrenamiento, id_ejercicio, Series, Repeticiones, Esfuerzo, id_estado) VALUES ('2', '5', '2', '15', '12.5', '1');	
